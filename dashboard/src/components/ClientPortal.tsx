@@ -639,9 +639,9 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                               </div>
                             )}
                             {report.hasLoginDetails && (
-                              <div className="space-y-0.5 sm:col-span-2 flex items-center gap-1.5 text-zinc-500">
-                                <Lock className="w-3.5 h-3.5 text-zinc-650" />
-                                <span className="text-[10px] font-medium font-sans">
+                              <div className="space-y-0.5 sm:col-span-2 flex items-center gap-1.5 text-zinc-400">
+                                <Lock className="w-3.5 h-3.5 text-zinc-500" />
+                                <span className="text-xs font-medium font-sans">
                                   Credenciais enviadas (visíveis apenas para o admin)
                                 </span>
                               </div>
@@ -793,7 +793,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                   />
                 </div>
               </div>
-              <p className="text-[10px] text-zinc-500 flex items-center gap-1 mt-1 font-sans">
+              <p className="text-xs text-zinc-450 flex items-center gap-1 mt-1 font-sans">
                 🔒 Estas credenciais serão visíveis apenas para a equipe administrativa e ficarão ocultas para outros usuários no portal do cliente.
               </p>
 
