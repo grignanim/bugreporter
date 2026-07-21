@@ -1032,6 +1032,30 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                       </div>
                     </div>
 
+                    {/* Extra metadata: portal, correlation ID, user credentials */}
+                    {(selectedReport.portal || selectedReport.correlationId || selectedReport.userCredentials) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-zinc-900/20 border border-zinc-900/80 p-4 rounded-lg">
+                        {selectedReport.portal && (
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Portal</span>
+                            <div className="text-xs font-bold text-primary mt-0.5">{selectedReport.portal}</div>
+                          </div>
+                        )}
+                        {selectedReport.correlationId && (
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">ID de Correlação</span>
+                            <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.correlationId}</div>
+                          </div>
+                        )}
+                        {selectedReport.userCredentials && (
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Usuário / Senha no Erro</span>
+                            <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.userCredentials}</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {selectedReport.url && (
                       <div className="space-y-1.5">
                         <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-500">URL Afetada</h4>

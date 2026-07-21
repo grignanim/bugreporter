@@ -48,6 +48,9 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   const [reportDesc, setReportDesc] = useState('');
   const [reportUrl, setReportUrl] = useState('');
   const [reportPriority, setReportPriority] = useState<Priority>('medium');
+  const [reportPortal, setReportPortal] = useState<string>('');
+  const [correlationId, setCorrelationId] = useState<string>('');
+  const [userCredentials, setUserCredentials] = useState<string>('');
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotBase64, setScreenshotBase64] = useState<string>('');
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
@@ -272,6 +275,9 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
       formData.append('priority', reportPriority);
       formData.append('reporter', selectedUser);
       formData.append('url', reportUrl);
+      if (reportPortal) formData.append('portal', reportPortal);
+      if (correlationId) formData.append('correlationId', correlationId);
+      if (userCredentials) formData.append('userCredentials', userCredentials);
       
       if (screenshotFile) {
         formData.append('file', screenshotFile);
@@ -298,6 +304,9 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
         setReportDesc('');
         setReportUrl('');
         setReportPriority('medium');
+        setReportPortal('');
+        setCorrelationId('');
+        setUserCredentials('');
         handleRemoveScreenshot();
         setSubmitSuccess(false);
       }, 1500);
@@ -590,7 +599,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                               rel="noopener noreferrer"
                               className="text-primary hover:underline text-xs flex items-center gap-1.5 self-start w-fit bg-primary/5 hover:bg-primary/10 border border-primary/20 px-2.5 py-1 rounded"
                             >
-                              Abrir no Sistema <ExternalLink className="w-3 h-3" />
+                              Abrir na Plataforma <ExternalLink className="w-3 h-3" />
                             </a>
                           </div>
                         )}
@@ -608,6 +617,30 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                                 <ImageIcon className="w-4 h-4" /> Clique para ampliar
                               </div>
                             </div>
+                          </div>
+                        )}
+
+                        {/* Extra fields: portal, correlation ID, user credentials */}
+                        {(report.portal || report.correlationId || report.userCredentials) && (
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-zinc-900/60">
+                            {report.portal && (
+                              <div className="space-y-0.5">
+                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Portal</h4>
+                                <p className="text-zinc-300 text-xs font-semibold">{report.portal}</p>
+                              </div>
+                            )}
+                            {report.correlationId && (
+                              <div className="space-y-0.5">
+                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">ID de Correlação</h4>
+                                <p className="text-zinc-300 text-xs font-mono">{report.correlationId}</p>
+                              </div>
+                            )}
+                            {report.userCredentials && (
+                              <div className="space-y-0.5">
+                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Usuário / Senha no Erro</h4>
+                                <p className="text-zinc-300 text-xs font-mono">{report.userCredentials}</p>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -674,6 +707,24 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Portal (only for freteclick) */}
+                {companySlug === 'freteclick' && (
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Portal</label>
+                    <select
+                      value={reportPortal}
+                      onChange={(e) => setReportPortal(e.target.value)}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-md py-2.5 px-3.5 text-white text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
+                      required
+                    >
+                      <option value="">Selecione o portal...</option>
+                      <option value="Admin">Admin</option>
+                      <option value="HUB">HUB</option>
+                      <option value="CotaFácil">CotaFácil</option>
+                    </select>
+                  </div>
+                )}
+
                 {/* Related URL */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">URL Relacionada (Link)</label>
@@ -696,8 +747,32 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                   >
                     <option value="low">Baixa (Dúvida, sugestão ou ajuste estético)</option>
                     <option value="medium">Média (Funcionamento incorreto mas contornável)</option>
-                    <option value="high">Alta (Bloqueia o uso do sistema ou causa erro crítico)</option>
+                    <option value="high">Alta (Bloqueia o uso da plataforma ou causa erro crítico)</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Correlation ID + User Credentials */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">ID de Correlação</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: abc123-def456"
+                    value={correlationId}
+                    onChange={(e) => setCorrelationId(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-md py-2.5 px-3.5 text-white placeholder-zinc-700 text-sm font-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Usuário / Senha no momento do erro</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: user@email.com / ****"
+                    value={userCredentials}
+                    onChange={(e) => setUserCredentials(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-md py-2.5 px-3.5 text-white placeholder-zinc-700 text-sm font-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                  />
                 </div>
               </div>
 

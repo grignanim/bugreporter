@@ -22,6 +22,9 @@ export interface Report {
   attachmentUrl: string;
   createdAt: string;
   internalNotes?: string;
+  portal?: string;
+  correlationId?: string;
+  userCredentials?: string;
 }
 
 export interface Settings {

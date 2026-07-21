@@ -135,7 +135,7 @@ app.get('/api/companies/:slug/reports', async (req, res) => {
 // 5. Submit a new report (file upload OR base64 from Ctrl+V)
 app.post('/api/reports', upload.single('file'), async (req, res) => {
   try {
-    const { companyId, title, description, priority, reporter, url, screenshotBase64 } = req.body;
+    const { companyId, title, description, priority, reporter, url, screenshotBase64, portal, correlationId, userCredentials } = req.body;
 
     if (!companyId || !title || !description || !reporter) {
       return res.status(400).json({ error: 'Campos obrigatórios: companyId, title, description, reporter.' });
@@ -169,7 +169,10 @@ app.post('/api/reports', upload.single('file'), async (req, res) => {
       priority,
       reporter,
       url,
-      attachmentUrl
+      attachmentUrl,
+      portal,
+      correlationId,
+      userCredentials
     });
 
     res.status(201).json({ success: true, report });

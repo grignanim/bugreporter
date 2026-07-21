@@ -45,6 +45,9 @@ CREATE TABLE IF NOT EXISTS reports (
   url TEXT DEFAULT '',
   attachment_url TEXT DEFAULT '',
   internal_notes TEXT DEFAULT '',
+  portal TEXT DEFAULT '',
+  correlation_id TEXT DEFAULT '',
+  user_credentials TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
