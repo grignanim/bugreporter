@@ -50,7 +50,8 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   const [reportPriority, setReportPriority] = useState<Priority>('medium');
   const [reportPortal, setReportPortal] = useState<string>('');
   const [correlationId, setCorrelationId] = useState<string>('');
-  const [userCredentials, setUserCredentials] = useState<string>('');
+  const [loginUser, setLoginUser] = useState<string>('');
+  const [loginPassword, setLoginPassword] = useState<string>('');
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotBase64, setScreenshotBase64] = useState<string>('');
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
@@ -277,7 +278,8 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
       formData.append('url', reportUrl);
       if (reportPortal) formData.append('portal', reportPortal);
       if (correlationId) formData.append('correlationId', correlationId);
-      if (userCredentials) formData.append('userCredentials', userCredentials);
+      if (loginUser) formData.append('loginUser', loginUser);
+      if (loginPassword) formData.append('loginPassword', loginPassword);
       
       if (screenshotFile) {
         formData.append('file', screenshotFile);
@@ -306,7 +308,8 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
         setReportPriority('medium');
         setReportPortal('');
         setCorrelationId('');
-        setUserCredentials('');
+        setLoginUser('');
+        setLoginPassword('');
         handleRemoveScreenshot();
         setSubmitSuccess(false);
       }, 1500);
@@ -621,8 +624,8 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                         )}
 
                         {/* Extra fields: portal, correlation ID, user credentials */}
-                        {(report.portal || report.correlationId || report.userCredentials) && (
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-zinc-900/60">
+                        {(report.portal || report.correlationId || report.loginUser || report.loginPassword) && (
+                          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2 border-t border-zinc-900/60">
                             {report.portal && (
                               <div className="space-y-0.5">
                                 <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Portal</h4>
@@ -635,10 +638,16 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                                 <p className="text-zinc-300 text-xs font-mono">{report.correlationId}</p>
                               </div>
                             )}
-                            {report.userCredentials && (
+                            {report.loginUser && (
                               <div className="space-y-0.5">
-                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Usuário / Senha no Erro</h4>
-                                <p className="text-zinc-300 text-xs font-mono">{report.userCredentials}</p>
+                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Usuário</h4>
+                                <p className="text-zinc-300 text-xs font-mono">{report.loginUser}</p>
+                              </div>
+                            )}
+                            {report.loginPassword && (
+                              <div className="space-y-0.5">
+                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Senha</h4>
+                                <p className="text-zinc-300 text-xs font-mono">{report.loginPassword}</p>
                               </div>
                             )}
                           </div>
@@ -752,7 +761,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                 </div>
               </div>
 
-              {/* Correlation ID + User Credentials */}
+              {/* Login User + Login Password */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">ID de Correlação</label>
@@ -764,13 +773,26 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-md py-2.5 px-3.5 text-white placeholder-zinc-700 text-sm font-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Usuário / Senha no momento do erro</label>
+                  <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Usuário logado</label>
                   <input
                     type="text"
-                    placeholder="Ex: user@email.com / ****"
-                    value={userCredentials}
-                    onChange={(e) => setUserCredentials(e.target.value)}
+                    placeholder="Ex: usuario@email.com"
+                    value={loginUser}
+                    onChange={(e) => setLoginUser(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-md py-2.5 px-3.5 text-white placeholder-zinc-700 text-sm font-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Senha utilizada</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: minhasenha123"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-md py-2.5 px-3.5 text-white placeholder-zinc-700 text-sm font-mono focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                   />
                 </div>

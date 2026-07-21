@@ -1033,8 +1033,8 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                     </div>
 
                     {/* Extra metadata: portal, correlation ID, user credentials */}
-                    {(selectedReport.portal || selectedReport.correlationId || selectedReport.userCredentials) && (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-zinc-900/20 border border-zinc-900/80 p-4 rounded-lg">
+                    {(selectedReport.portal || selectedReport.correlationId || selectedReport.loginUser || selectedReport.loginPassword) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-zinc-900/20 border border-zinc-900/80 p-4 rounded-lg">
                         {selectedReport.portal && (
                           <div className="space-y-0.5">
                             <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Portal</span>
@@ -1047,10 +1047,16 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                             <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.correlationId}</div>
                           </div>
                         )}
-                        {selectedReport.userCredentials && (
+                        {selectedReport.loginUser && (
                           <div className="space-y-0.5">
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Usuário / Senha no Erro</span>
-                            <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.userCredentials}</div>
+                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Usuário</span>
+                            <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.loginUser}</div>
+                          </div>
+                        )}
+                        {selectedReport.loginPassword && (
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Senha</span>
+                            <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.loginPassword}</div>
                           </div>
                         )}
                       </div>

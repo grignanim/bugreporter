@@ -24,7 +24,8 @@ export interface Report {
   internalNotes?: string;
   portal?: string;
   correlationId?: string;
-  userCredentials?: string;
+  loginUser?: string;
+  loginPassword?: string;
 }
 
 export interface Settings {

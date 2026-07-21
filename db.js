@@ -34,7 +34,8 @@ function mapReport(row) {
     internalNotes: row.internal_notes || '',
     portal: row.portal || '',
     correlationId: row.correlation_id || '',
-    userCredentials: row.user_credentials || '',
+    loginUser: row.login_user || '',
+    loginPassword: row.login_password || '',
     createdAt: row.created_at
   };
 }
@@ -181,7 +182,7 @@ export const db = {
     return mapReport(data);
   },
 
-  async createReport({ companyId, title, description, priority, reporter, url, attachmentUrl, portal, correlationId, userCredentials }) {
+  async createReport({ companyId, title, description, priority, reporter, url, attachmentUrl, portal, correlationId, loginUser, loginPassword }) {
     const newReport = {
       id: `report-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       company_id: companyId,
@@ -195,7 +196,8 @@ export const db = {
       internal_notes: '',
       portal: portal || '',
       correlation_id: correlationId || '',
-      user_credentials: userCredentials || ''
+      login_user: loginUser || '',
+      login_password: loginPassword || ''
     };
 
     const { data, error } = await supabase
@@ -215,7 +217,8 @@ export const db = {
     if (reportData.attachmentUrl !== undefined) updates.attachment_url = reportData.attachmentUrl;
     if (reportData.portal !== undefined) updates.portal = reportData.portal;
     if (reportData.correlationId !== undefined) updates.correlation_id = reportData.correlationId;
-    if (reportData.userCredentials !== undefined) updates.user_credentials = reportData.userCredentials;
+    if (reportData.loginUser !== undefined) updates.login_user = reportData.loginUser;
+    if (reportData.loginPassword !== undefined) updates.login_password = reportData.loginPassword;
 
     const { data, error } = await supabase
       .from('reports')

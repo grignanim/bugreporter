@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS reports (
   internal_notes TEXT DEFAULT '',
   portal TEXT DEFAULT '',
   correlation_id TEXT DEFAULT '',
-  user_credentials TEXT DEFAULT '',
+  login_user TEXT DEFAULT '',
+  login_password TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
