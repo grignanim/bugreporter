@@ -665,7 +665,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
 
       {/* Report Modal */}
       <Dialog open={isReportModalOpen} onOpenChange={(open: boolean) => { if (!loadingAction) setIsReportModalOpen(open); }}>
-        <DialogContent className="sm:max-w-[600px] bg-zinc-950 border border-zinc-800 text-white rounded-xl">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-zinc-950 border border-zinc-800 text-white rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
               <span className="text-primary">Novo</span> Apontamento
