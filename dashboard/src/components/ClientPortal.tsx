@@ -69,7 +69,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
     try {
       setStep('loading');
       // Fetch company members and name (public API)
-      const res = await fetch(`http://localhost:3001/api/companies/${companySlug}`);
+      const res = await fetch(`/api/companies/${companySlug}`);
       if (!res.ok) {
         throw new Error('Empresa não encontrada');
       }
@@ -104,7 +104,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
 
   const verifyPasswordAndLoad = async (pass: string): Promise<boolean> => {
     try {
-      const res = await fetch('http://localhost:3001/api/auth/client', {
+      const res = await fetch('/api/auth/client', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug: companySlug, password: pass })
@@ -112,7 +112,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
       
       if (res.ok) {
         // Fetch reports
-        const reportsRes = await fetch(`http://localhost:3001/api/companies/${companySlug}/reports`, {
+        const reportsRes = await fetch(`/api/companies/${companySlug}/reports`, {
           headers: { 'x-client-password': pass }
         });
         if (reportsRes.ok) {
@@ -134,7 +134,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
     setLoadingAction(true);
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/client', {
+      const res = await fetch('/api/auth/client', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug: companySlug, password })
@@ -149,7 +149,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
       localStorage.setItem(PASS_KEY, password);
       
       // Load reports
-      const reportsRes = await fetch(`http://localhost:3001/api/companies/${companySlug}/reports`, {
+      const reportsRes = await fetch(`/api/companies/${companySlug}/reports`, {
         headers: { 'x-client-password': password }
       });
       if (reportsRes.ok) {
@@ -183,7 +183,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   const handleRefreshReports = async () => {
     if (!company) return;
     try {
-      const reportsRes = await fetch(`http://localhost:3001/api/companies/${companySlug}/reports`, {
+      const reportsRes = await fetch(`/api/companies/${companySlug}/reports`, {
         headers: { 'x-client-password': password }
       });
       if (reportsRes.ok) {
@@ -279,7 +279,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
         formData.append('screenshotBase64', screenshotBase64);
       }
 
-      const res = await fetch('http://localhost:3001/api/reports', {
+      const res = await fetch('/api/reports', {
         method: 'POST',
         body: formData // Multipar/form-data
       });
@@ -598,9 +598,9 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                         {report.attachmentUrl && (
                           <div className="space-y-1">
                             <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-2">Print Anexo</h4>
-                            <div className="relative group max-w-sm rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950 cursor-pointer" onClick={() => setLightboxImage(`http://localhost:3001${report.attachmentUrl}`)}>
+                            <div className="relative group max-w-sm rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950 cursor-pointer" onClick={() => setLightboxImage(`${report.attachmentUrl}`)}>
                               <img 
-                                src={`http://localhost:3001${report.attachmentUrl}`} 
+                                src={`${report.attachmentUrl}`} 
                                 alt="Screenshot do bug" 
                                 className="max-h-48 w-full object-cover group-hover:scale-[1.02] transition-all"
                               />

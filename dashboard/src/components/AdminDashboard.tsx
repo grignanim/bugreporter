@@ -86,7 +86,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
   const verifyAdminPassAndLoad = async (pass: string) => {
     try {
       setLoadingData(true);
-      const res = await fetch('http://localhost:3001/api/auth/admin', {
+      const res = await fetch('/api/auth/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: pass })
@@ -112,9 +112,9 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
       const headers = { 'x-admin-password': pass };
       
       const [reportsRes, companiesRes, settingsRes] = await Promise.all([
-        fetch('http://localhost:3001/api/admin/reports', { headers }),
-        fetch('http://localhost:3001/api/admin/companies', { headers }),
-        fetch('http://localhost:3001/api/admin/settings', { headers })
+        fetch('/api/admin/reports', { headers }),
+        fetch('/api/admin/companies', { headers }),
+        fetch('/api/admin/settings', { headers })
       ]);
 
       if (reportsRes.ok) {
@@ -140,7 +140,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
     setLoadingAction(true);
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/admin', {
+      const res = await fetch('/api/auth/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: adminPassword })
@@ -173,7 +173,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
   // Update Report (Status, Priority, Internal Notes)
   const handleUpdateReport = async (reportId: string, fieldsToUpdate: Partial<Report>) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/admin/reports/${reportId}`, {
+      const res = await fetch(`/api/admin/reports/${reportId}`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
     if (!confirm('Deseja realmente deletar este apontamento?')) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/admin/reports/${reportId}`, {
+      const res = await fetch(`/api/admin/reports/${reportId}`, {
         method: 'DELETE',
         headers: { 'x-admin-password': currentAdminPass() }
       });
@@ -248,7 +248,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
     try {
       if (editingCompany) {
         // Update company
-        const res = await fetch(`http://localhost:3001/api/admin/companies/${editingCompany.id}`, {
+        const res = await fetch(`/api/admin/companies/${editingCompany.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -266,7 +266,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
         setCompanies(companies.map(c => c.id === editingCompany.id ? updated : c));
       } else {
         // Create company
-        const res = await fetch('http://localhost:3001/api/admin/companies', {
+        const res = await fetch('/api/admin/companies', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -302,7 +302,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
     if (!confirm('Deseja realmente deletar esta empresa? Atenção: todos os apontamentos vinculados a ela também serão excluídos!')) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/admin/companies/${companyId}`, {
+      const res = await fetch(`/api/admin/companies/${companyId}`, {
         method: 'DELETE',
         headers: { 'x-admin-password': currentAdminPass() }
       });
@@ -351,7 +351,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
     setLoadingAction(true);
 
     try {
-      const res = await fetch('http://localhost:3001/api/admin/settings', {
+      const res = await fetch('/api/admin/settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -1051,10 +1051,10 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                         <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-500">Captura de Tela Anexa</h4>
                         <div 
                           className="relative group max-w-full rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950 cursor-pointer" 
-                          onClick={() => setLightboxImage(`http://localhost:3001${selectedReport.attachmentUrl}`)}
+                          onClick={() => setLightboxImage(`${selectedReport.attachmentUrl}`)}
                         >
                           <img 
-                            src={`http://localhost:3001${selectedReport.attachmentUrl}`} 
+                            src={`${selectedReport.attachmentUrl}`} 
                             alt="Bug attachment screenshot" 
                             className="max-h-[380px] w-full object-contain group-hover:scale-[1.01] transition-all bg-zinc-900/40"
                           />
