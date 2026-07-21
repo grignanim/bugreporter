@@ -820,12 +820,8 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                   />
                 </div>
               </div>
-              <p className="text-xs text-zinc-450 flex items-center gap-1 mt-1 font-sans">
-                🔒 Estas credenciais serão visíveis apenas para a equipe administrativa e ficarão ocultas para outros usuários no portal do cliente.
-              </p>
-
               {/* Save credentials checkbox */}
-              <div className="flex items-center gap-2 mt-1.5 pt-0.5 border-t border-zinc-900/40">
+              <div className="flex items-center gap-2 mt-2">
                 <input
                   type="checkbox"
                   id="saveCredentials"
@@ -837,6 +833,10 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                   Salvar informações de usuário e senha nesta máquina
                 </label>
               </div>
+
+              <p className="text-xs text-zinc-450 flex items-center gap-1 mt-1 font-sans">
+                🔒 Estas credenciais serão visíveis apenas para a equipe administrativa e ficarão ocultas para outros usuários no portal do cliente.
+              </p>
 
               {/* Drag/Drop and Paste zone for Screenshot */}
               <div className="space-y-1.5">
