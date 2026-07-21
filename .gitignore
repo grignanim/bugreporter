@@ -1,0 +1,22 @@
+# Dependências
+node_modules/
+dashboard/node_modules/
+
+# Build do frontend
+dashboard/dist/
+
+# Banco de dados local (legado)
+database.json
+uploads/
+
+# Variáveis de ambiente (NUNCA subir para o Git!)
+.env
+.env.local
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp

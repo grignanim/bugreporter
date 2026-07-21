@@ -1,0 +1,31 @@
+{
+  "name": "bug-report-portal",
+  "version": "1.0.0",
+  "description": "Bug report and feedback portal for clients - PIXELOGIC",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "dashboard:install": "cd dashboard && npm install",
+    "dashboard:dev": "cd dashboard && npm run dev",
+    "dashboard:build": "cd dashboard && npm run build",
+    "setup": "npm install && npm run dashboard:install",
+    "vercel-build": "npm install && npm run dashboard:install && npm run dashboard:build"
+  },
+  "keywords": [],
+  "author": "PIXELOGIC",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.9",
+    "cloudinary": "^2.6.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-heading: 'Outfit', 'Geist Variable', sans-serif;
+    --font-sans: 'Outfit', 'Geist Variable', sans-serif;
+    
+    /* Dark Theme default */
+    --background: 0 0% 0%;             /* #000000 */
+    --foreground: 0 0% 100%;           /* #ffffff */
+    
+    --card: 240 10% 3.9%;              /* #09090b */
+    --card-foreground: 0 0% 100%;      /* #ffffff */
+    
+    --popover: 240 10% 3.9%;           /* #09090b */
+    --popover-foreground: 0 0% 100%;   /* #ffffff */
+    
+    --primary: 84 81% 44%;             /* #84cc16 - Verde Limão */
+    --primary-foreground: 0 0% 0%;     /* Preto */
+    
+    --secondary: 240 3.7% 15.9%;       /* #18181b */
+    --secondary-foreground: 0 0% 100%; /* #ffffff */
+    
+    --muted: 240 3.7% 15.9%;           /* #18181b */
+    --muted-foreground: 240 5% 64.9%;  /* #a1a1aa */
+    
+    --accent: 84 81% 44%;              /* Verde Limão */
+    --accent-foreground: 0 0% 0%;      /* Preto */
+    
+    --destructive: 0 62.8% 30.6%;      /* Vermelho escuro */
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 240 3.7% 15.9%;          /* #27272a */
+    --input: 240 3.7% 15.9%;           /* #27272a */
+    --ring: 84 81% 44%;                /* Verde Limão */
+    
+    --radius: 0.5rem;
+  }
+  
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  body {
+    @apply bg-background text-foreground min-h-screen selection:bg-primary selection:text-primary-foreground;
+    font-family: var(--font-sans);
+  }
+  
+  html {
+    @apply font-sans scroll-smooth;
+  }
+}
+
+/* Glassmorphism custom styling utilities */
+.glass-panel {
+  background: rgba(9, 9, 11, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(39, 39, 42, 0.8);
+}
+
+.glass-card {
+  background: rgba(24, 24, 27, 0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(39, 39, 42, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(132, 204, 22, 0.4);
+  box-shadow: 0 0 20px rgba(132, 204, 22, 0.05);
+}
+
+/* Custom scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
