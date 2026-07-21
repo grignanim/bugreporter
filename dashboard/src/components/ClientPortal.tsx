@@ -52,6 +52,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   const [correlationId, setCorrelationId] = useState<string>('');
   const [loginUser, setLoginUser] = useState<string>('');
   const [loginPassword, setLoginPassword] = useState<string>('');
+  const [saveCredentials, setSaveCredentials] = useState<boolean>(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotBase64, setScreenshotBase64] = useState<string>('');
   const [screenshotPreview, setScreenshotPreview] = useState<string>('');
@@ -63,6 +64,9 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   // LocalStorage keys specific to this company slug
   const PASS_KEY = `bugreport_pass_${companySlug}`;
   const USER_KEY = `bugreport_user_${companySlug}`;
+  const LOGIN_USER_KEY = `bugreport_login_user_${companySlug}`;
+  const LOGIN_PASS_KEY = `bugreport_login_pass_${companySlug}`;
+  const SAVE_CREDS_KEY = `bugreport_save_creds_${companySlug}`;
 
   // Fetch company info on mount
   useEffect(() => {
@@ -79,6 +83,16 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
       }
       const data = await res.json();
       setCompany(data);
+
+      // Check if user has saved credentials
+      const savedSaveCreds = localStorage.getItem(SAVE_CREDS_KEY) === 'true';
+      if (savedSaveCreds) {
+        setSaveCredentials(true);
+        const savedLoginUser = localStorage.getItem(LOGIN_USER_KEY);
+        const savedLoginPass = localStorage.getItem(LOGIN_PASS_KEY);
+        if (savedLoginUser) setLoginUser(savedLoginUser);
+        if (savedLoginPass) setLoginPassword(savedLoginPass);
+      }
 
       // Check saved credentials
       const savedPass = localStorage.getItem(PASS_KEY);
@@ -296,6 +310,17 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
         throw new Error('Erro ao enviar o apontamento.');
       }
 
+      // Save or clear credentials in local storage
+      if (saveCredentials) {
+        localStorage.setItem(LOGIN_USER_KEY, loginUser);
+        localStorage.setItem(LOGIN_PASS_KEY, loginPassword);
+        localStorage.setItem(SAVE_CREDS_KEY, 'true');
+      } else {
+        localStorage.removeItem(LOGIN_USER_KEY);
+        localStorage.removeItem(LOGIN_PASS_KEY);
+        localStorage.setItem(SAVE_CREDS_KEY, 'false');
+      }
+
       setSubmitSuccess(true);
       await handleRefreshReports();
       
@@ -308,8 +333,10 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
         setReportPriority('medium');
         setReportPortal('');
         setCorrelationId('');
-        setLoginUser('');
-        setLoginPassword('');
+        if (!saveCredentials) {
+          setLoginUser('');
+          setLoginPassword('');
+        }
         handleRemoveScreenshot();
         setSubmitSuccess(false);
       }, 1500);
@@ -796,6 +823,20 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
               <p className="text-xs text-zinc-450 flex items-center gap-1 mt-1 font-sans">
                 🔒 Estas credenciais serão visíveis apenas para a equipe administrativa e ficarão ocultas para outros usuários no portal do cliente.
               </p>
+
+              {/* Save credentials checkbox */}
+              <div className="flex items-center gap-2 mt-1.5 pt-0.5 border-t border-zinc-900/40">
+                <input
+                  type="checkbox"
+                  id="saveCredentials"
+                  checked={saveCredentials}
+                  onChange={(e) => setSaveCredentials(e.target.checked)}
+                  className="w-4 h-4 rounded border-zinc-800 bg-zinc-900 text-primary focus:ring-primary focus:ring-offset-black cursor-pointer"
+                />
+                <label htmlFor="saveCredentials" className="text-xs text-zinc-400 select-none cursor-pointer hover:text-zinc-300 transition-colors">
+                  Salvar informações de usuário e senha nesta máquina
+                </label>
+              </div>
 
               {/* Drag/Drop and Paste zone for Screenshot */}
               <div className="space-y-1.5">
