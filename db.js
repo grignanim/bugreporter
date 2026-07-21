@@ -213,6 +213,9 @@ export const db = {
     const updates = {};
     if (reportData.status !== undefined) updates.status = reportData.status;
     if (reportData.priority !== undefined) updates.priority = reportData.priority;
+    if (reportData.title !== undefined) updates.title = reportData.title;
+    if (reportData.description !== undefined) updates.description = reportData.description;
+    if (reportData.url !== undefined) updates.url = reportData.url;
     if (reportData.internalNotes !== undefined) updates.internal_notes = reportData.internalNotes;
     if (reportData.attachmentUrl !== undefined) updates.attachment_url = reportData.attachmentUrl;
     if (reportData.portal !== undefined) updates.portal = reportData.portal;

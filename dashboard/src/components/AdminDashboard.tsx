@@ -60,6 +60,17 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
+  // Report edit mode
+  const [isEditingReport, setIsEditingReport] = useState<boolean>(false);
+  const [editTitle, setEditTitle] = useState<string>('');
+  const [editDesc, setEditDesc] = useState<string>('');
+  const [editUrl, setEditUrl] = useState<string>('');
+  const [editPortal, setEditPortal] = useState<string>('');
+  const [editCorrelationId, setEditCorrelationId] = useState<string>('');
+  const [editLoginUser, setEditLoginUser] = useState<string>('');
+  const [editLoginPassword, setEditLoginPassword] = useState<string>('');
+  const [editSaveLoading, setEditSaveLoading] = useState<boolean>(false);
+
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState<boolean>(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [companyName, setCompanyName] = useState<string>('');
@@ -170,7 +181,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
 
   const currentAdminPass = () => localStorage.getItem(ADMIN_PASS_KEY) || '';
 
-  // Update Report (Status, Priority, Internal Notes)
+  // Update Report (Status, Priority, Internal Notes, and editable fields)
   const handleUpdateReport = async (reportId: string, fieldsToUpdate: Partial<Report>) => {
     try {
       const res = await fetch(`/api/admin/reports/${reportId}`, {
@@ -194,6 +205,41 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
     } catch (err) {
       console.error(err);
       alert('Erro ao atualizar o bug.');
+    }
+  };
+
+  // Open edit mode: populate edit states from selectedReport
+  const openEditMode = () => {
+    if (!selectedReport) return;
+    setEditTitle(selectedReport.title);
+    setEditDesc(selectedReport.description);
+    setEditUrl(selectedReport.url || '');
+    setEditPortal(selectedReport.portal || '');
+    setEditCorrelationId(selectedReport.correlationId || '');
+    setEditLoginUser(selectedReport.loginUser || '');
+    setEditLoginPassword(selectedReport.loginPassword || '');
+    setIsEditingReport(true);
+  };
+
+  // Save all editable fields at once
+  const handleSaveReportEdits = async () => {
+    if (!selectedReport) return;
+    setEditSaveLoading(true);
+    try {
+      await handleUpdateReport(selectedReport.id, {
+        title: editTitle,
+        description: editDesc,
+        url: editUrl,
+        portal: editPortal,
+        correlationId: editCorrelationId,
+        loginUser: editLoginUser,
+        loginPassword: editLoginPassword
+      });
+      setIsEditingReport(false);
+    } catch (err) {
+      alert('Erro ao salvar as edições.');
+    } finally {
+      setEditSaveLoading(false);
     }
   };
 
@@ -1001,15 +1047,47 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
       </Dialog>
 
       {/* Bug Details Modal */}
-      <Dialog open={isReportModalOpen} onOpenChange={(open: boolean) => { if (!loadingAction) setIsReportModalOpen(open); }}>
+      <Dialog open={isReportModalOpen} onOpenChange={(open: boolean) => { if (!loadingAction) { setIsReportModalOpen(open); setIsEditingReport(false); } }}>
         <DialogContent className="max-w-[95vw] md:max-w-6xl w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl overflow-y-auto max-h-[90vh] p-6">
           <DialogHeader className="pb-6 border-b border-zinc-900">
-            <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <Bug className="w-5 h-5 text-primary animate-pulse" /> Detalhes do Apontamento
-            </DialogTitle>
-            <DialogDescription className="text-zinc-500 text-xs">
-              Triagem de bug, notas de desenvolvimento e alteração de status.
-            </DialogDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                  <Bug className="w-5 h-5 text-primary animate-pulse" /> Detalhes do Apontamento
+                </DialogTitle>
+                <DialogDescription className="text-zinc-500 text-xs mt-1">
+                  Triagem de bug, notas de desenvolvimento e alteração de status.
+                </DialogDescription>
+              </div>
+              {/* Edit mode toggle button */}
+              {!isEditingReport ? (
+                <button
+                  type="button"
+                  onClick={openEditMode}
+                  className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-md transition-all cursor-pointer"
+                >
+                  ✏️ Editar Campos
+                </button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingReport(false)}
+                    className="text-xs text-zinc-500 hover:text-white px-3 py-1.5 rounded-md border border-zinc-800 hover:border-zinc-700 bg-transparent transition-all cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveReportEdits}
+                    disabled={editSaveLoading}
+                    className="flex items-center gap-1.5 text-xs text-primary-foreground bg-primary hover:bg-primary/90 px-3 py-1.5 rounded-md transition-all cursor-pointer disabled:opacity-60"
+                  >
+                    {editSaveLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : '✓'} Salvar Edições
+                  </button>
+                </div>
+              )}
+            </div>
           </DialogHeader>
 
           {selectedReport && (
@@ -1020,59 +1098,127 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                   
                   {/* Left Column: Bug Description and Attachment */}
                   <div className="md:col-span-3 space-y-6">
+
+                    {/* Title */}
                     <div className="space-y-1.5">
                       <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-500">Título</h4>
-                      <p className="text-xl font-extrabold text-white leading-tight tracking-tight">{selectedReport.title}</p>
+                      {isEditingReport ? (
+                        <input
+                          type="text"
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          className="w-full bg-zinc-900 border border-primary/40 rounded-md py-2.5 px-3.5 text-white text-lg font-bold focus:outline-none focus:border-primary transition-all"
+                        />
+                      ) : (
+                        <p className="text-xl font-extrabold text-white leading-tight tracking-tight">{selectedReport.title}</p>
+                      )}
                     </div>
 
+                    {/* Description */}
                     <div className="space-y-1.5">
                       <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-500">Descrição Detalhada</h4>
-                      <div className="bg-zinc-900/30 border border-zinc-900 p-5 rounded-lg text-zinc-300 text-sm whitespace-pre-wrap leading-relaxed">
-                        {selectedReport.description}
-                      </div>
+                      {isEditingReport ? (
+                        <textarea
+                          value={editDesc}
+                          onChange={(e) => setEditDesc(e.target.value)}
+                          className="w-full bg-zinc-900 border border-primary/40 rounded-md py-2.5 px-3.5 text-zinc-200 text-sm leading-relaxed focus:outline-none focus:border-primary transition-all min-h-[120px] resize-y"
+                        />
+                      ) : (
+                        <div className="bg-zinc-900/30 border border-zinc-900 p-5 rounded-lg text-zinc-300 text-sm whitespace-pre-wrap leading-relaxed">
+                          {selectedReport.description}
+                        </div>
+                      )}
                     </div>
 
                     {/* Extra metadata: portal, correlation ID, user credentials */}
-                    {(selectedReport.portal || selectedReport.correlationId || selectedReport.loginUser || selectedReport.loginPassword) && (
+                    {(isEditingReport || selectedReport.portal || selectedReport.correlationId || selectedReport.loginUser || selectedReport.loginPassword) && (
                       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-zinc-900/20 border border-zinc-900/80 p-4 rounded-lg">
-                        {selectedReport.portal && (
-                          <div className="space-y-0.5">
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Portal</span>
+                        {/* Portal */}
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Portal</span>
+                          {isEditingReport ? (
+                            <input
+                              type="text"
+                              value={editPortal}
+                              onChange={(e) => setEditPortal(e.target.value)}
+                              placeholder="Admin / HUB / CotaFácil"
+                              className="w-full bg-zinc-900 border border-primary/40 rounded-md py-1.5 px-2.5 text-white text-xs font-mono focus:outline-none focus:border-primary transition-all"
+                            />
+                          ) : selectedReport.portal ? (
                             <div className="text-xs font-bold text-primary mt-0.5">{selectedReport.portal}</div>
-                          </div>
-                        )}
-                        {selectedReport.correlationId && (
-                          <div className="space-y-0.5">
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">ID de Correlação</span>
+                          ) : null}
+                        </div>
+                        {/* Correlation ID */}
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">ID de Correlação</span>
+                          {isEditingReport ? (
+                            <input
+                              type="text"
+                              value={editCorrelationId}
+                              onChange={(e) => setEditCorrelationId(e.target.value)}
+                              placeholder="abc123-def456"
+                              className="w-full bg-zinc-900 border border-primary/40 rounded-md py-1.5 px-2.5 text-white text-xs font-mono focus:outline-none focus:border-primary transition-all"
+                            />
+                          ) : selectedReport.correlationId ? (
                             <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.correlationId}</div>
-                          </div>
-                        )}
-                        {selectedReport.loginUser && (
-                          <div className="space-y-0.5">
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Usuário</span>
+                          ) : null}
+                        </div>
+                        {/* Login User */}
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Usuário</span>
+                          {isEditingReport ? (
+                            <input
+                              type="text"
+                              value={editLoginUser}
+                              onChange={(e) => setEditLoginUser(e.target.value)}
+                              placeholder="usuario@email.com"
+                              className="w-full bg-zinc-900 border border-primary/40 rounded-md py-1.5 px-2.5 text-white text-xs font-mono focus:outline-none focus:border-primary transition-all"
+                            />
+                          ) : selectedReport.loginUser ? (
                             <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.loginUser}</div>
-                          </div>
-                        )}
-                        {selectedReport.loginPassword && (
-                          <div className="space-y-0.5">
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Senha</span>
+                          ) : null}
+                        </div>
+                        {/* Login Password */}
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Senha</span>
+                          {isEditingReport ? (
+                            <input
+                              type="text"
+                              value={editLoginPassword}
+                              onChange={(e) => setEditLoginPassword(e.target.value)}
+                              placeholder="senha123"
+                              className="w-full bg-zinc-900 border border-primary/40 rounded-md py-1.5 px-2.5 text-white text-xs font-mono focus:outline-none focus:border-primary transition-all"
+                            />
+                          ) : selectedReport.loginPassword ? (
                             <div className="text-xs font-mono text-zinc-300 mt-0.5">{selectedReport.loginPassword}</div>
-                          </div>
-                        )}
+                          ) : null}
+                        </div>
                       </div>
                     )}
 
-                    {selectedReport.url && (
+                    {/* URL */}
+                    {(isEditingReport || selectedReport.url) && (
                       <div className="space-y-1.5">
                         <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-500">URL Afetada</h4>
-                        <a 
-                          href={selectedReport.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="text-primary hover:underline text-xs flex items-center gap-1.5 self-start bg-primary/5 hover:bg-primary/10 border border-primary/20 px-3 py-2 rounded w-fit transition-all"
-                        >
-                          Abrir link original <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
+                        {isEditingReport ? (
+                          <input
+                            type="url"
+                            value={editUrl}
+                            onChange={(e) => setEditUrl(e.target.value)}
+                            placeholder="https://exemplo.com/pagina"
+                            className="w-full bg-zinc-900 border border-primary/40 rounded-md py-2 px-3 text-white text-xs font-mono focus:outline-none focus:border-primary transition-all"
+                          />
+                        ) : (
+                          <a 
+                            href={selectedReport.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-primary hover:underline text-xs flex items-center gap-1.5 self-start bg-primary/5 hover:bg-primary/10 border border-primary/20 px
+-3 py-2 rounded w-fit transition-all"
+                          >
+                            Abrir link original <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
                       </div>
                     )}
 
