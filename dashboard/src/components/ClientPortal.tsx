@@ -793,6 +793,9 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                   />
                 </div>
               </div>
+              <p className="text-[10px] text-zinc-500 flex items-center gap-1 mt-1 font-sans">
+                🔒 Estas credenciais serão visíveis apenas para a equipe administrativa e ficarão ocultas para outros usuários no portal do cliente.
+              </p>
 
               {/* Drag/Drop and Paste zone for Screenshot */}
               <div className="space-y-1.5">
