@@ -26,6 +26,7 @@ export interface Report {
   correlationId?: string;
   loginUser?: string;
   loginPassword?: string;
+  hasLoginDetails?: boolean;
 }
 
 export interface Settings {

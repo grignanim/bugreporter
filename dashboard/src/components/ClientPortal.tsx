@@ -623,8 +623,8 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                           </div>
                         )}
 
-                        {/* Extra fields: portal, correlation ID, user credentials */}
-                        {(report.portal || report.correlationId || report.loginUser || report.loginPassword) && (
+                        {/* Extra fields: portal, correlation ID, and hidden login details notice */}
+                        {(report.portal || report.correlationId || report.hasLoginDetails) && (
                           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2 border-t border-zinc-900/60">
                             {report.portal && (
                               <div className="space-y-0.5">
@@ -638,16 +638,12 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                                 <p className="text-zinc-300 text-xs font-mono">{report.correlationId}</p>
                               </div>
                             )}
-                            {report.loginUser && (
-                              <div className="space-y-0.5">
-                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Usuário</h4>
-                                <p className="text-zinc-300 text-xs font-mono">{report.loginUser}</p>
-                              </div>
-                            )}
-                            {report.loginPassword && (
-                              <div className="space-y-0.5">
-                                <h4 className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Senha</h4>
-                                <p className="text-zinc-300 text-xs font-mono">{report.loginPassword}</p>
+                            {report.hasLoginDetails && (
+                              <div className="space-y-0.5 sm:col-span-2 flex items-center gap-1.5 text-zinc-500">
+                                <Lock className="w-3.5 h-3.5 text-zinc-650" />
+                                <span className="text-[10px] font-medium font-sans">
+                                  Credenciais enviadas (visíveis apenas para o admin)
+                                </span>
                               </div>
                             )}
                           </div>

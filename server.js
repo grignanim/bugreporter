@@ -124,8 +124,11 @@ app.get('/api/companies/:slug/reports', async (req, res) => {
     }
 
     const reports = await db.getReportsByCompany(company.id);
-    // Exclude internalNotes from client view
-    const clientReports = reports.map(({ internalNotes, ...rest }) => rest);
+    // Exclude internalNotes, loginUser, and loginPassword from client view
+    const clientReports = reports.map(({ internalNotes, loginUser, loginPassword, ...rest }) => ({
+      ...rest,
+      hasLoginDetails: !!(loginUser || loginPassword)
+    }));
     res.json(clientReports);
   } catch (err) {
     res.status(500).json({ error: err.message });
