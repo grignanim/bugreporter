@@ -585,7 +585,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                           <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${statusInfo.color}`}>
                             {statusInfo.label}
                           </span>
-                          <span className="text-zinc-600 text-xs font-mono hidden sm:inline">#{report.id.substring(7, 12)}</span>
+                          <span className="text-zinc-600 text-xs font-mono hidden sm:inline">#{report.id.slice(-5)}</span>
                         </div>
                         <h3 className="text-lg font-bold text-white tracking-tight">{report.title}</h3>
                         

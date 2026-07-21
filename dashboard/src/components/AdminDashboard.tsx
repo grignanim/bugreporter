@@ -733,7 +733,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                           <tr key={report.id} className="hover:bg-zinc-950/30 transition-all">
                             <td className="px-6 py-4 font-mono text-xs whitespace-nowrap text-zinc-500">
                               <div>{formatDate(report.createdAt).split(' ')[0]}</div>
-                              <div className="text-[10px]">#{report.id.substring(7, 12)}</div>
+                              <div className="text-[10px]">#{report.id.slice(-5)}</div>
                             </td>
                             <td className="px-6 py-4 font-bold text-white whitespace-nowrap">
                               {getCompanyName(report.companyId)}
@@ -1266,7 +1266,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
 
                       <div className="bg-zinc-900/40 border border-zinc-900/80 p-3 rounded-lg">
                         <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">ID Chamado</span>
-                        <div className="text-[10px] font-mono text-zinc-400 mt-0.5">#{selectedReport.id.substring(7, 15)}</div>
+                        <div className="text-[10px] font-mono text-zinc-400 mt-0.5">#{selectedReport.id.slice(-8)}</div>
                       </div>
                     </div>
 
