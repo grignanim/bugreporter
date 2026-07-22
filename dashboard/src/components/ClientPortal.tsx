@@ -14,7 +14,9 @@ import {
   ChevronUp,
   Loader2,
   Share2,
-  Check
+  Check,
+  Search,
+  X
 } from 'lucide-react';
 import { 
   Dialog, 
@@ -45,6 +47,13 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filterPortal, setFilterPortal] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [filterUser, setFilterUser] = useState<string>('all');
   
   // New Report Form states
   const [reportTitle, setReportTitle] = useState('');
@@ -390,6 +399,30 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
     });
   };
 
+  // Filtered reports derived from active filters
+  const filteredReports = reports.filter((r) => {
+    const q = searchQuery.toLowerCase().trim();
+    if (q && !r.title.toLowerCase().includes(q) && !r.description.toLowerCase().includes(q) && !r.reporter.toLowerCase().includes(q)) return false;
+    if (filterPortal !== 'all' && r.portal !== filterPortal) return false;
+    if (filterStatus !== 'all' && r.status !== filterStatus) return false;
+    if (filterPriority !== 'all' && r.priority !== filterPriority) return false;
+    if (filterUser !== 'all' && r.reporter !== filterUser) return false;
+    return true;
+  });
+
+  const hasActiveFilters = searchQuery || filterPortal !== 'all' || filterStatus !== 'all' || filterPriority !== 'all' || filterUser !== 'all';
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setFilterPortal('all');
+    setFilterStatus('all');
+    setFilterPriority('all');
+    setFilterUser('all');
+  };
+
+  // Unique users from reports list for the user filter dropdown
+  const uniqueReporters = Array.from(new Set(reports.map((r) => r.reporter)));
+
   const getPriorityBadgeColor = (prio: Priority) => {
     switch (prio) {
       case 'high': return 'bg-red-950/40 text-red-500 border-red-900/50';
@@ -579,6 +612,92 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
           </button>
         </div>
 
+        {/* Filter Toolbar */}
+        <div className="glass-panel p-3.5 rounded-xl border border-zinc-900 flex flex-col lg:flex-row gap-3 mb-2">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-zinc-600 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar por título, descrição ou usuário..."
+              className="w-full bg-zinc-950 border border-zinc-900 rounded-md py-2 pl-9 pr-4 text-sm text-white placeholder-zinc-700 focus:outline-none focus:border-primary transition-all"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2 items-center">
+            {/* Portal filter — only relevant for freteclick */}
+            {companySlug === 'freteclick' && (
+              <select
+                value={filterPortal}
+                onChange={(e) => setFilterPortal(e.target.value)}
+                className="bg-zinc-950 border border-zinc-900 rounded-md px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-primary cursor-pointer"
+              >
+                <option value="all">Todos Portais</option>
+                <option value="Admin">Admin</option>
+                <option value="HUB">HUB</option>
+                <option value="CotaFácil">CotaFácil</option>
+              </select>
+            )}
+
+            {/* Status filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="bg-zinc-950 border border-zinc-900 rounded-md px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-primary cursor-pointer"
+            >
+              <option value="all">Todos Status</option>
+              <option value="pending">Aguardando</option>
+              <option value="investigating">Em Análise</option>
+              <option value="resolved">Resolvido</option>
+              <option value="closed">Finalizado</option>
+            </select>
+
+            {/* Priority filter */}
+            <select
+              value={filterPriority}
+              onChange={(e) => setFilterPriority(e.target.value)}
+              className="bg-zinc-950 border border-zinc-900 rounded-md px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-primary cursor-pointer"
+            >
+              <option value="all">Todas Prioridades</option>
+              <option value="low">Baixa</option>
+              <option value="medium">Média</option>
+              <option value="high">Alta</option>
+            </select>
+
+            {/* User filter */}
+            <select
+              value={filterUser}
+              onChange={(e) => setFilterUser(e.target.value)}
+              className="bg-zinc-950 border border-zinc-900 rounded-md px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-primary cursor-pointer"
+            >
+              <option value="all">Todos Usuários</option>
+              {uniqueReporters.map((u) => (
+                <option key={u} value={u}>{u}</option>
+              ))}
+            </select>
+
+            {/* Clear filters button */}
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 text-xs text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2.5 py-2 rounded-md transition-all cursor-pointer"
+                title="Limpar filtros"
+              >
+                <X className="w-3.5 h-3.5" /> Limpar
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Result count */}
+        {hasActiveFilters && (
+          <p className="text-xs text-zinc-500 font-mono mb-2">
+            {filteredReports.length} resultado{filteredReports.length !== 1 ? 's' : ''} encontrado{filteredReports.length !== 1 ? 's' : ''}
+          </p>
+        )}
+
         {/* Reports Feed */}
         <div className="flex-1 flex flex-col gap-4">
           {reports.length === 0 ? (
@@ -591,9 +710,18 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                 Nenhum bug ou apontamento registrado por sua empresa até o momento. Use o botão acima se encontrar algum problema!
               </p>
             </div>
+          ) : filteredReports.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-12 glass-card rounded-xl border border-zinc-900 my-4 min-h-[200px]">
+              <Search className="w-8 h-8 text-zinc-700 mb-3" />
+              <h3 className="text-base font-bold text-white mb-1">Nenhum resultado</h3>
+              <p className="text-zinc-500 text-sm max-w-sm mx-auto">
+                Nenhum apontamento corresponde aos filtros aplicados.
+              </p>
+              <button onClick={clearFilters} className="mt-4 text-xs text-primary hover:underline cursor-pointer">Limpar filtros</button>
+            </div>
           ) : (
             <div className="space-y-4">
-              {reports.map((report) => {
+              {filteredReports.map((report) => {
                 const isExpanded = expandedReportId === report.id;
                 const statusInfo = getStatusLabelAndColor(report.status);
                 
