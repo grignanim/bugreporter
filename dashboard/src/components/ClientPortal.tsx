@@ -12,7 +12,9 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
-  Loader2
+  Loader2,
+  Share2,
+  Check
 } from 'lucide-react';
 import { 
   Dialog, 
@@ -42,6 +44,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   const [expandedReportId, setExpandedReportId] = useState<string | null>(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   
   // New Report Form states
   const [reportTitle, setReportTitle] = useState('');
@@ -72,6 +75,24 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
   useEffect(() => {
     fetchCompanyData();
   }, [companySlug]);
+
+  // Auto-expand report from URL param ?report=ID after dashboard is loaded
+  useEffect(() => {
+    if (step !== 'dashboard' || reports.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const reportId = params.get('report');
+    if (!reportId) return;
+    const exists = reports.some((r) => r.id === reportId);
+    if (!exists) return;
+    setExpandedReportId(reportId);
+    // Scroll to the report card after a short delay to ensure it's rendered
+    setTimeout(() => {
+      const el = document.getElementById(`report-${reportId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
+  }, [step, reports]);
 
   const fetchCompanyData = async () => {
     try {
@@ -349,6 +370,15 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
     }
   };
 
+  const handleShareReport = (reportId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/c/${companySlug}?report=${reportId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedId(reportId);
+      setTimeout(() => setCopiedId(null), 2500);
+    });
+  };
+
   const formatDate = (isoString: string) => {
     const d = new Date(isoString);
     return d.toLocaleDateString('pt-BR', {
@@ -570,6 +600,7 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                 return (
                   <div 
                     key={report.id}
+                    id={`report-${report.id}`}
                     className="glass-card rounded-xl overflow-hidden border border-zinc-900 transition-all duration-200"
                   >
                     {/* Card Header (Always Visible) */}
@@ -607,8 +638,27 @@ export default function ClientPortal({ companySlug }: ClientPortalProps) {
                         </div>
                       </div>
 
-                      <div className="text-zinc-500 hover:text-white p-1 rounded bg-zinc-900 border border-zinc-800">
-                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      <div className="flex items-center gap-2">
+                        {/* Share Button */}
+                        <button
+                          onClick={(e) => handleShareReport(report.id, e)}
+                          title="Copiar link para compartilhar"
+                          className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded border transition-all cursor-pointer ${
+                            copiedId === report.id
+                              ? 'bg-primary/15 text-primary border-primary/40'
+                              : 'bg-zinc-900 text-zinc-500 border-zinc-800 hover:text-white hover:border-zinc-700'
+                          }`}
+                        >
+                          {copiedId === report.id ? (
+                            <><Check className="w-3.5 h-3.5" /> Copiado!</>
+                          ) : (
+                            <><Share2 className="w-3.5 h-3.5" /> Compartilhar</>
+                          )}
+                        </button>
+
+                        <div className="text-zinc-500 hover:text-white p-1 rounded bg-zinc-900 border border-zinc-800">
+                          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </div>
                       </div>
                     </div>
 
